@@ -21,7 +21,8 @@ export enum TokenType {
   Break, // break
   If, // if
   In, // in
-  Times, // in
+  Times, // times
+  Import, // import
   
   // Unary operators
   Exclamation, // !
@@ -52,6 +53,7 @@ const KEYWORDS: Record<string, TokenType> = {
   func: TokenType.Func,
   return: TokenType.Return,
   continue: TokenType.Continue,
+  import: TokenType.Import,
   break: TokenType.Break,
   if: TokenType.If,
   for: TokenType.For,

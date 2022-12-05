@@ -28,12 +28,13 @@ if (action == "repl") {
   }
   compile(filename);
 } else if (action == "help") {
-  console.log("'coati repl' - Open console")
-  console.log("'coati run [PATH]' - Run 'main.kj' or PATH if supplied.")
+  console.log("'keyjay repl' - Open console")
+  console.log("'keyjay run [PATH]' - Run 'main.kj' or file at PATH if supplied.")
+  console.log("'keyjay compile [PATH]' - Compile 'main.kj' or file at PATH if supplied.")
 } else if (action) {
-  throw `Unknown action ${action}! Use 'coati help' to get help.`;
+  throw `Unknown action ${action}! Use 'keyjay help' to get help.`;
 } else {
-  throw `No action supplied. Use 'coati help' to get help.`;
+  throw `No action supplied. Use 'keyjay help' to get help.`;
 }
 
 
