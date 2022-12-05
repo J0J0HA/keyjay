@@ -11,4 +11,6 @@ Programming language interpreted via TypeScript, other implementations planned.
 The compiling is no traditional compiling. Even if compiled, the code is still being interpreted.  
 If you compile your code, it gets tokenized and parsed. The AST Nodes given by the parser are stored in a temporary TypeScript file with a little script to start the execution.  
 Then this TypeScript file is being compiled and the result is stored in a `.exe`.  
-Though, you just get a compiled interpreter with pre-parsed code.
+Though, you just get a compiled interpreter with pre-parsed code.  
+
+/!\ Compiling does not support imports yet!

@@ -1,6 +1,12 @@
 // @ts-ignore
 import gtype from "./types.ts";
 // @ts-ignore
+import { types } from "./types.ts";
+// @ts-ignore
+import { evaluate } from "./interpreter.ts";
+// @ts-ignore
+import Parser from "../frontend/parser.ts";
+// @ts-ignore
 import { MK_BOOL, MK_TYPE, MK_OBJ, MK_STRING, MK_NUMBER, MK_NONE, MK_LIST, RuntimeVal, NativeFunctionVal } from "./values.ts";
 
 export function createGlobalEnv(path: string) {
@@ -15,10 +21,42 @@ export function createGlobalEnv(path: string) {
   env.declareVar("print", {
     type: "nativecode",
     value: function (arg: RuntimeVal): RuntimeVal {
-      console.log(gtype(arg.type)?.asStr?.value?.(arg)?.value || gtype(arg.type)?.repr?.value?.(arg)?.value || `<unknown type ${arg.type}>`)
+      console.log(types[arg.type]?.asStr?.value?.(arg)?.value || types[arg.type]?.repr?.value?.(arg)?.value || `<unknown type ${arg.type}>`)
       return MK_NONE();
     }
-  } as NativeFunctionVal, true)
+  } as NativeFunctionVal, true);
+  env.declareVar("import", {
+    type: "nativecode",
+    env: true,
+    value: function (env: Environment, arg: RuntimeVal): RuntimeVal {
+      const subenv = new Environment(env);
+      subenv.declareVar("system", MK_OBJ({
+        impl: MK_STRING("TypeScript"),
+        name: MK_STRING("KeyJay"),
+        version: MK_STRING("v0.1"),
+        path: MK_STRING(arg.value)
+      }), true);
+      // @ts-ignore
+      const code = Deno.readTextFileSync(arg.value);
+      const parser = new Parser();
+      const prog = parser.produceAST(code);
+      evaluate(prog, subenv);
+      var obj: {[id: string]: RuntimeVal} = {};
+      subenv.variables.forEach((...args) => {
+        obj[args[1]] = args[0]
+      })
+      return MK_OBJ(obj);
+    }
+  } as NativeFunctionVal, true);
+  env.declareVar("eval", {
+    type: "nativecode",
+    value: function (arg: RuntimeVal): RuntimeVal {
+      const env = createGlobalEnv("<eval>");
+      const parser = new Parser();
+      const prog = parser.produceAST(arg.value);
+      return evaluate(prog, env);
+    }
+  } as NativeFunctionVal, true);
   env.declareVar("range", { 
     type: "nativecode",
     value: function (kjmin: RuntimeVal, kjmax: RuntimeVal) {
@@ -68,7 +106,7 @@ export function createGlobalEnv(path: string) {
 
 export default class Environment {
   private parent?: Environment;
-  private variables: Map<string, RuntimeVal>;
+  public variables: Map<string, RuntimeVal>;
   private constants: Set<string>;
 
   constructor(parentENV?: Environment) {

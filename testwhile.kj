@@ -36,4 +36,3 @@ print("fin")
 const obj = {a: 1, l: ["1", "b"], q: "mdfmmsdf", n: none};
 print(obj)
 print(obj.asJson())
-return 0;

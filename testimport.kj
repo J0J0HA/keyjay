@@ -1,1 +1,2 @@
-#> This test is still in progress <#
+const hi = import("testwhile.kj");
+print(hi.test(a=7, b=3))

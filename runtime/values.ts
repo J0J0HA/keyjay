@@ -48,6 +48,7 @@ export interface FunctionVal extends RuntimeVal {
 export interface NativeFunctionVal extends RuntimeVal {
   type: "nativecode";
   value: any;
+  env?: boolean;
 }
 
 /**

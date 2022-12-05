@@ -20,6 +20,8 @@ import { evaluate } from "../interpreter.ts";
 import { NumberVal, StringVal, ObjectVal, BooleanVal, RuntimeVal, MK_BOOL, MK_NONE, MK_LIST, NativeFunctionVal, FunctionVal, ListVal } from "../values.ts";
 // @ts-ignore
 import gtype from "../types.ts";
+// @ts-ignore
+import { types } from "../types.ts";
 
 function eval_numnum_binary_expr(
   lhs: NumberVal,
@@ -180,8 +182,11 @@ export function run_func(func: NativeFunctionVal | FunctionVal, args: Expr[], kw
   }
   
   if (func.type == "nativecode") {
-    var newargs: RuntimeVal[] = [];
+    var newargs: (RuntimeVal|Environment)[] = [];
     var newkwargs: {[id: string]: RuntimeVal} = {};
+    if (func.env) {
+      newargs.push(env)
+    }
     for (const arg in args) {
       newargs.push(evaluate(args[arg] || "none", env))
     }
@@ -255,7 +260,7 @@ export function eval_member_expr (
   const org = evaluate(expr.object, env);
   const prop = expr.computed ? evaluate(expr.property, env).value : (expr.property as Identifier).symbol;
 
-  if ((!expr.computed) && gtype(org.type)?.[prop]) {
+  if ((!expr.computed) && types[org.type]?.[prop]) {
     return gtype(org.type)[prop] as RuntimeVal;
   } else if (org.value?.has(prop)) {
     return org.value.get(prop) as RuntimeVal;
