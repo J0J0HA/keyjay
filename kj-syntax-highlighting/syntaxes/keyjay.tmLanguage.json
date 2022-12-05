@@ -1,0 +1,119 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "KJ",
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#natives"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#numbers"
+		},
+		{
+			"include": "#types"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#illegals"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.keyjay",
+					"match": "\\b(if|while|for|return|continue|break|else|elif|in|var|const|func)\\b"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.keyjay",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.keyjay",
+					"match": "\\\\."
+				}
+			]
+		},
+		"comments": {
+			"name": "comment.block.keyjay",
+			"begin": "#>",
+			"end": "<#",
+			"patterns": [
+				{
+					"name": "constant.character.escape.keyjay",
+					"match": "\\\\."
+				}
+			]
+		},
+		"types": {
+			"patterns": [
+				{
+					"name": "storage.type.keyjay",
+					"match": "\\btype\\.(number|string|object|list|type)\\b"
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"name": "constant.language.keyjay",
+					"match": "\\b(true|false|none|system|type)\\b"
+				},
+				{
+					"name": "support.constant.keyjay",
+					"match": "\\b(system|type)\\b"
+				},
+				{
+					"name": "variable.language.keyjay",
+					"match": "\\bself\\b"
+				},
+				{
+					"name": "constant.other.keyjay",
+					"match": "\\b\\S+:\\b"
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"name": "constant.numeric.keyjay",
+					"match": "\\b\\d*\\b"
+				}
+			]
+		},
+		"natives": {
+			"patterns": [
+				{
+					"name": "support.function.keyjay",
+					"match": "\\b(print|input|range)\\b"
+				},
+				{
+					"name": "support.function.keyjay",
+					"match": "\\b\\.(repr|asStr|asBool|asNum|type)\\b"
+				}
+			]
+		},
+		"illegals": {
+			"patterns": [
+				{
+					"name": "invalid.deprecated.keyjay",
+					"match": ".+\\.(toString|toBoolean|toNumber)"
+				}
+			]
+		}
+	},
+	"scopeName": "source.keyjay"
+}

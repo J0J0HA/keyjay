@@ -1,0 +1,39 @@
+#>
+Code to test KJ
+By: J0J0HA
+<#
+
+func test(a=1, b=2) {
+    return a * b;
+}
+
+print(test(a=3, b=3)) #> Testing keyword arguments <#
+
+for x in range(0, 3) {
+    continue;
+    print("hi " + (x == 3).asStr())
+}
+
+for 3 times {
+    print("melon")
+}
+
+print(system)
+true
+
+type.type
+var tst = 1;
+
+
+"".type()
+
+print("".type() == type.string)
+
+print(input(input()))
+
+print("fin")
+
+const obj = {a: 1, l: ["1", "b"], q: "mdfmmsdf", n: none};
+print(obj)
+print(obj.asJson())
+return 0;

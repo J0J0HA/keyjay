@@ -1,0 +1,25 @@
+{
+  "name": "kj-syntax-highlighting",
+  "displayName": "KJ Syntax Highlighting",
+  "description": "Syntax Highlighting for KJ",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.73.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "keyjay",
+      "aliases": ["KJ", "KeyJay", "keyjay"],
+      "extensions": [".kj", ".kjts", ".kjpy"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "keyjay",
+      "scopeName": "source.keyjay",
+      "path": "./syntaxes/keyjay.tmLanguage.json"
+    }]
+  }
+}

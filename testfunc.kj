@@ -1,0 +1,7 @@
+func test(a) {
+    return a * 2;
+}
+
+
+return test(4);
+print(test("hi"))
