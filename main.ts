@@ -44,14 +44,23 @@ async function compile(filename: string) {
   const input = await Deno.readTextFile(filename);
   const program = parser.produceAST(input);
   console.log(program)
-  var code = '// @ts-ignore\n';
-  code += 'import{evaluate}from"./runtime/interpreter.ts";';
-  code += 'import{createGlobalEnv}from"./runtime/environment.ts";';
+  var code = '';
+  code += 'import{evaluate}from"https://raw.githubusercontent.com/J0J0HA/keyjay/master/runtime/interpreter.ts";';
+  code += 'import{createGlobalEnv}from"https://raw.githubusercontent.com/J0J0HA/keyjay/master/runtime/environment.ts";';
   code += 'const program=JSON.parse(\'' + JSON.stringify(program) + '\');';
   code += 'const env=createGlobalEnv("' + filename + '");';
   code += 'evaluate(program,env);\n';
   // @ts-ignore
-  await Deno.writeTextFile("./__temp_compiling_keyjay__.ts", code);
+  const tempFilePath = await Deno.makeTempFile({
+    prefix: "compile_keyjay_",
+    suffix: ".ts",
+  });
+  // @ts-ignore
+  await Deno.writeTextFile(tempFilePath, code);
+  const cmd = ["deno", "compile", "-A", "--output", filename + ".exe", tempFilePath];
+  // @ts-ignore
+  const p = await Deno.run({ cmd });
+  await p.status();
 }
 
 async function run(filename: string) {
