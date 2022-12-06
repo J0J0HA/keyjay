@@ -6,7 +6,7 @@
 // -----------------------------------------------------------
 
 // @ts-ignore
-import { Token } from "./lexer.ts";
+import { Token } from "./lexer";
 
 export type NodeType =
   // STATEMENTS

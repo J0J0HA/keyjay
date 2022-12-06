@@ -1,5 +1,4 @@
-// @ts-ignore
-import { Stmt, Expr, FuncDeclarationArgument } from "../frontend/ast.ts";
+import { Stmt, Expr, FuncDeclarationArgument } from "../frontend/ast";
 
 export type ValueType = 
       "none"

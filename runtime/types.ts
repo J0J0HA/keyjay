@@ -1,7 +1,5 @@
-// @ts-ignore
-import * as i from "./values.ts";
-// @ts-ignore
-import { evaluate } from "./interpreter.ts";
+import * as i from "./values";
+import { evaluate } from "./interpreter";
 
 export default function gtype(name: string) {
   return types[name] || basics;

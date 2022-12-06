@@ -1,0 +1,26 @@
+{
+  "name": "keyjay",
+  "version": "0.0.2",
+  "description": "KeyJay Interpreter and Compiler",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/J0J0HA/keyjay.git"
+  },
+  "author": "JoJoJux",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/J0J0HA/keyjay/issues"
+  },
+  "homepage": "https://github.com/J0J0HA/keyjay#readme",
+  "dependencies": {
+    "pkg-api": "^1.0.0",
+    "readline-sync": "^1.4.10",
+    "sync-fetch": "^0.4.2",
+    "typescript": "^4.9.3",
+    "unzipper": "^0.10.11"
+  }
+}

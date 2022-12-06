@@ -1,15 +1,9 @@
-// @ts-ignore
-import { Program, VarDeclaration, TypeRequest, FuncDeclaration, WhileLoop, ForLoop, IfStmt, ReturnStmt } from "../../frontend/ast.ts";
-// @ts-ignore
-import Environment from "../environment.ts";
-// @ts-ignore
-import { evaluate } from "../interpreter.ts";
-// @ts-ignore
-import { MK_NONE, MK_RET, RuntimeVal, MK_NUMBER, FunctionVal } from "../values.ts";
-// @ts-ignore
-import { run_func } from "./expressions.ts";
-// @ts-ignore
-import gtype from "../types.ts";
+import { Program, VarDeclaration, FuncDeclaration, WhileLoop, ForLoop, IfStmt, ReturnStmt } from "../../frontend/ast";
+import Environment from "../environment";
+import { evaluate } from "../interpreter";
+import { MK_NONE, MK_RET, RuntimeVal, MK_NUMBER, FunctionVal } from "../values";
+import { run_func } from "./expressions";
+import gtype from "../types";
 
 export function eval_program(program: Program, env: Environment): RuntimeVal {
   let lastEvaluated: RuntimeVal = MK_NONE();
@@ -35,14 +29,6 @@ export function eval_var_declaration(
 
   return env.declareVar(declaration.identifier, value, declaration.constant);
 }
-
-export function eval_type_request(
-  request: TypeRequest,
-  env: Environment,
-): RuntimeVal {
-  return { type: "type", value: evaluate(request.expr, env).type };
-}
-
 export function eval_function_declaration(
   funcdecl: FuncDeclaration,
   env: Environment,

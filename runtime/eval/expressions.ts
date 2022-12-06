@@ -10,18 +10,12 @@ import {
   Identifier,
   ObjectLiteral,
   ListLiteral,
-// @ts-ignore
-} from "../../frontend/ast.ts";
-// @ts-ignore
-import Environment from "../environment.ts";
-// @ts-ignore
-import { evaluate } from "../interpreter.ts";
-// @ts-ignore
-import { NumberVal, StringVal, ObjectVal, BooleanVal, RuntimeVal, MK_BOOL, MK_NONE, MK_LIST, NativeFunctionVal, FunctionVal, ListVal } from "../values.ts";
-// @ts-ignore
-import gtype from "../types.ts";
-// @ts-ignore
-import { types } from "../types.ts";
+} from "../../frontend/ast";
+import Environment from "../environment";
+import { evaluate } from "../interpreter";
+import { NumberVal, StringVal, ObjectVal, BooleanVal, RuntimeVal, MK_BOOL, MK_NONE, MK_LIST, NativeFunctionVal, FunctionVal, ListVal } from "../values";
+import gtype from "../types";
+import { types } from "../types";
 
 function eval_numnum_binary_expr(
   lhs: NumberVal,
@@ -121,7 +115,7 @@ export function eval_unary_expr(
 
   if (unop.operator == "!") {
     const type = gtype(expr.type);
-    return MK_BOOL(!type.asBool.value(self).value);
+    return MK_BOOL(!type.asBool.value(expr).value);
   } else {
     throw `type ${expr.type} could not handle unary operator ${unop.operator}`;
   }
@@ -170,7 +164,7 @@ export function run_func(func: NativeFunctionVal | FunctionVal, args: Expr[], kw
       funcenv.declareVar("self", self, false);
     }
     for (const arg in func.args) {
-      funcenv.declareVar(func.args[arg].identifier, evaluate(kwargs[func.args[arg].identifier] || args[arg] || func.args[arg].value || "none", env), false)
+      funcenv.declareVar(func.args[arg].identifier, evaluate(kwargs[func.args[arg].identifier] || args[arg] || func.args[arg].value, env), false)
     }
     for (const stmt of func.body) {
       if (stmt.kind == "ReturnStmt") {
@@ -188,10 +182,10 @@ export function run_func(func: NativeFunctionVal | FunctionVal, args: Expr[], kw
       newargs.push(env)
     }
     for (const arg in args) {
-      newargs.push(evaluate(args[arg] || "none", env))
+      newargs.push(evaluate(args[arg], env))
     }
     for (const arg in kwargs) {
-      newkwargs[arg] = evaluate(kwargs[arg] || "none", env)
+      newkwargs[arg] = evaluate(kwargs[arg], env)
     }
     if (self) {
       return func.value(self, ...newargs, newkwargs);

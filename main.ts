@@ -1,28 +1,47 @@
-// @ts-ignore
-import Parser from "./frontend/parser.ts";
-// @ts-ignore
-import Environment, { createGlobalEnv } from "./runtime/environment.ts";
-// @ts-ignore
-import gtype from "./runtime/types.ts";
-// @ts-ignore
-import { evaluate } from "./runtime/interpreter.ts";
+import Parser from "./frontend/parser";
+import Environment, { createGlobalEnv } from "./runtime/environment";
+import gtype from "./runtime/types";
+import { evaluate } from "./runtime/interpreter";
+import * as fs from 'fs';
+import * as os from 'os';
+import * as ts from "typescript";
+const unzip = require('unzipper');
+const pkg = require("pkg-api");
+const fetch = require("sync-fetch");
+const prompt = require("readline-sync").question;
+import * as path from 'path';
 
+function tmpdir(): [string, CallableFunction] {
+  const charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var randomString = '';
+  for (var i = 0; i < 6; i++) {
+    var randomPoz = Math.floor(Math.random() * charSet.length);
+    randomString += charSet.substring(randomPoz,randomPoz+1);
+  }
+  const dir = path.join(os.tmpdir(), "keyjay-compile_" + randomString);
+  fs.mkdirSync(dir);
+  return [dir, (function filenameof(name) {
+    return path.join(dir, name);
+  })]
+}
 
 // Start service
-// @ts-ignore
-const action = Deno.args[0];
+const action = process.argv[2];
+var offset = 0;
+if (action == "--trace-uncaught") {
+  const action = process.argv[3];
+  offset = 1;
+}
 if (action == "repl") {
   repl();
 } else if (action == "run") {
-  // @ts-ignore
-  var filename = Deno.args[1] || "./main.kj"
+  var filename = process.argv[3 + offset] || "./main.kj"
   if (filename == ".") {
     filename = "./main.kj";
   }
   run(filename);
 } else if (action == "compile") {
-  // @ts-ignore
-  var filename = Deno.args[1] || "./main.kj"
+  var filename = process.argv[3 + offset] || "./main.kj"
   if (filename == ".") {
     filename = "./main.kj";
   }
@@ -38,66 +57,60 @@ if (action == "repl") {
 }
 
 
-async function compile(filename: string) {
+function compile(filename: string) {
   const parser = new Parser();
 
-  // @ts-ignore
-  const input = await Deno.readTextFile(filename);
-  const program = parser.produceAST(input);
+  const input = fs.readFileSync(filename, "utf-8").toString();
+  const prog = parser.produceAST(input);
   var code = '/*' + filename + '*/';
-  code += 'import{evaluate}from"https://raw.githubusercontent.com/J0J0HA/keyjay/master/runtime/interpreter.ts";';
-  code += 'import{createGlobalEnv}from"https://raw.githubusercontent.com/J0J0HA/keyjay/master/runtime/environment.ts";';
-  code += 'var a=JSON.parse(\'' + JSON.stringify(program) + '\');';
+  code += 'import{evaluate}from"./runtime/interpreter";';
+  code += 'import{createGlobalEnv}from"./runtime/environment";';
+  code += 'var a=JSON.parse(\'' + JSON.stringify(prog) + '\');';
   code += 'var b=createGlobalEnv("' + filename + '");';
   code += 'evaluate(a,b);\n';
-  // @ts-ignore
-  const tempFilePath = await Deno.makeTempFile({
-    prefix: "kjcompile_",
-    suffix: ".ts",
-  });
-  // @ts-ignore
-  await Deno.writeTextFile(tempFilePath, code);
-  const cmd = ["deno", "compile", "-A", "--no-check", "--output", filename + ".exe", tempFilePath];
-  // @ts-ignore
-  const p = await Deno.run({ cmd });
-  await p.status();
-  console.log("Finished compiling");
+  const fn = tmpdir()[1];
+  fs.writeFileSync(fn("main.ts"), code);
+  fs.writeFileSync(fn("environment.zip"), fetch("https://github.com/J0J0HA/keyjay/raw/master/keyjaycode.zip").buffer());
+  fs.createReadStream(fn("environment.zip")).pipe(unzip.Extract({ path: fn(".")}));
+  const result = ts.transpileModule(code, {});
+  fs.writeFileSync(fn("package.json"), '{"main": "' + prompt("ID: ") + '"}');
+  fs.writeFileSync(fn("main.js"), result.outputText);
+  pkg(fn("main.js"), { targets: "node18-win-x64,node18-macos-x64,node18-linux-x64", output: filename.replace(/\.[^/.]+$/, "")}).then(() => console.log("Finished compiling"));
 }
 
 async function run(filename: string) {
   const parser = new Parser();
   const env = createGlobalEnv(filename);
 
-  // @ts-ignore
-  const input = await Deno.readTextFile(filename);
+  const input = fs.readFileSync(filename, "utf-8").toString();
   const program = parser.produceAST(input);
 
   evaluate(program, env);
 }
 
-function repl() {
+async function repl() {
   const parser = new Parser();
   const env = createGlobalEnv("<repl>");
 
   // INITIALIZE REPL
-  console.log("\nKeyJay TypeScript v0.1 Repl");
+  console.log("\nKeyJay TypeScript 0.0.2 Repl");
 
   // Continue Repl Until User Stops Or Types `exit`
   while (true) {
-    const input = prompt(">");
-    // Check for no user input or exit keyword.
+    const input = prompt("> ", (answ: any) => { console.log("!", answ) });
+
+    // Check for exit keyword.
     if (!input) {
       continue;
     }
     if (input.includes("exit")) {
-      // @ts-ignore
-      Deno.exit(1);
+      process.exit(1);
     }
-    
-    
+
+
     // Produce AST From sourc-code
     const program = parser.produceAST(input);
-    
+
     const result = evaluate(program, env);
     console.log(gtype(result.type).repr.value(result).value);
   }

@@ -1,6 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-// @ts-ignore
-import { MK_BOOL } from "../runtime/values.ts";
+import { MK_BOOL } from "../runtime/values";
 import {
   AssignmentExpr,
   BinaryExpr,
@@ -27,11 +26,8 @@ import {
   FuncDeclarationArgument,
   UnaryExpr,
   ReturnStmt,
-  // @ts-ignore
-} from "./ast.ts";
-
-// @ts-ignore
-import { Token, tokenize, TokenType } from "./lexer.ts";
+} from "./ast";
+import { Token, tokenize, TokenType } from "./lexer";
 
 /**
  * Frontend for producing a valid AST from sourcode

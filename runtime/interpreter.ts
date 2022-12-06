@@ -1,5 +1,4 @@
-// @ts-ignore
-import { NumberVal, RuntimeVal, StringVal } from "./values.ts";
+import { NumberVal, RuntimeVal, StringVal } from "./values";
 import {
   AssignmentExpr,
   MemberExpr,
@@ -21,13 +20,13 @@ import {
   VarDeclaration,
   FuncDeclaration,
 // @ts-ignore
-} from "../frontend/ast.ts";
+} from "../frontend/ast";
 // @ts-ignore
-import Environment from "./environment.ts";
+import Environment from "./environment";
 // @ts-ignore
-import { MK_RET } from "./values.ts";
+import { MK_RET } from "./values";
 // @ts-ignore
-import { eval_program, eval_var_declaration, eval_type_request, eval_function_declaration, eval_while_loop, eval_for_loop, eval_if } from "./eval/statements.ts";
+import { eval_program, eval_var_declaration, eval_type_request, eval_function_declaration, eval_while_loop, eval_for_loop, eval_if } from "./eval/statements";
 import {
   eval_assignment,
   eval_binary_expr,
@@ -39,7 +38,7 @@ import {
   eval_member_expr,
   eval_call_expr,
 // @ts-ignore
-} from "./eval/expressions.ts";
+} from "./eval/expressions";
 
 export function evaluate(astNode: Stmt, env: Environment): RuntimeVal {
   switch (astNode.kind) {

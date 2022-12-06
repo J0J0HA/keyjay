@@ -1,13 +1,10 @@
-// @ts-ignore
-import gtype from "./types.ts";
-// @ts-ignore
-import { types } from "./types.ts";
-// @ts-ignore
-import { evaluate } from "./interpreter.ts";
-// @ts-ignore
-import Parser from "../frontend/parser.ts";
-// @ts-ignore
-import { MK_BOOL, MK_TYPE, MK_OBJ, MK_STRING, MK_NUMBER, MK_NONE, MK_LIST, RuntimeVal, NativeFunctionVal } from "./values.ts";
+import gtype from "./types";
+import { types } from "./types";
+import { evaluate } from "./interpreter";
+import Parser from "../frontend/parser";
+import { MK_BOOL, MK_TYPE, MK_OBJ, MK_STRING, MK_NUMBER, MK_NONE, MK_LIST, RuntimeVal, NativeFunctionVal } from "./values";
+const prompt = require("readline-sync").question;
+import * as fs from 'fs';
 
 export function createGlobalEnv(path: string) {
   const env = new Environment();
@@ -33,11 +30,10 @@ export function createGlobalEnv(path: string) {
       subenv.declareVar("system", MK_OBJ({
         impl: MK_STRING("TypeScript"),
         name: MK_STRING("KeyJay"),
-        version: MK_STRING("v0.1"),
+        version: MK_STRING("0.0.2"),
         path: MK_STRING(arg.value)
       }), true);
-      // @ts-ignore
-      const code = Deno.readTextFileSync(arg.value);
+      const code = fs.readFileSync(arg.value).toString();
       const parser = new Parser();
       const prog = parser.produceAST(code);
       evaluate(prog, subenv);
