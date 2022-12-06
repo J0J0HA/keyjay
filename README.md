@@ -28,7 +28,7 @@ Though, you just get a compiled interpreter with pre-parsed code.
 * Now can import global packages with import
 * Changed name for local imports to importf
 * Fixed true/false switch
-* Added `.measure()` to types to support `<`, `>`, `<=`, `>=`
+* Added `.measure()` to types to support `<`, `>`, `<=`, `>=` for non-numbers
 * Started fixing error msgs
 * Various fixes
 ### 0.0.2
