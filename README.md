@@ -31,6 +31,7 @@ Though, you just get a compiled interpreter with pre-parsed code.
 * Added `.measure()` to types to support `<`, `>`, `<=`, `>=` for non-numbers
 * Started fixing error msgs
 * Various fixes
+* Now allowing _ in vernames
 ### 0.0.2
 * Changed from deno to typical TypeScript
 * Rewrote Compiling (Now equal to `tsc main.ts && pkg main.js`)
