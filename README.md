@@ -22,10 +22,19 @@ Though, you just get a compiled interpreter with pre-parsed code.
 /!\ Compiling does not support imports yet!
 
 ## Change Log
-### v0.2
+### 1.1.3
+* Fixed Compiling issues
+* Now supports and `&`, or `|` and xor `!|`
+* Now can import global packages with import
+* Changed name for local imports to importf
+* Fixed true/false switch
+* Added `.measure()` to types to support `<`, `>`, `<=`, `>=`
+* Started fixing error msgs
+* Various fixes
+### 0.0.2
 * Changed from deno to typical TypeScript
 * Rewrote Compiling (Now equal to `tsc main.ts && pkg main.js`)
-### v0.1
+### 0.0.1
 * Initial Release
 * Support Lexing, Paring and Interpreting
 * Support Compiling
