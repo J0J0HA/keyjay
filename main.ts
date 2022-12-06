@@ -78,7 +78,7 @@ function compile(filename: string) {
   pkg(fn("main.js"), { targets: "node18-win-x64,node18-macos-x64,node18-linux-x64", output: filename.replace(/\.[^/.]+$/, "")}).then(() => console.log("Finished compiling"));
 }
 
-async function run(filename: string) {
+function run(filename: string) {
   const parser = new Parser();
   const env = createGlobalEnv(filename);
 
@@ -88,12 +88,12 @@ async function run(filename: string) {
   evaluate(program, env);
 }
 
-async function repl() {
+function repl() {
   const parser = new Parser();
   const env = createGlobalEnv("<repl>");
 
   // INITIALIZE REPL
-  console.log("\nKeyJay TypeScript 0.0.2 Repl");
+  console.log("\nKeyJay TypeScript 1.1.3 Repl");
 
   // Continue Repl Until User Stops Or Types `exit`
   while (true) {

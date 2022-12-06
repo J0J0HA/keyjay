@@ -29,6 +29,7 @@ export enum TokenType {
   // Grouping * Operators
   BinaryOperator, // * / + - %
   ComparisonOperator, // == !=
+  LogicalOperator, // & | !|
   Equals, // =
   Comma, // ,
   Dot, // .
@@ -76,7 +77,7 @@ function token(value = "", type: TokenType, differ: boolean): Token {
  * Returns whether the character passed in alphabetic -> [a-zA-Z]
  */
 function isalpha(src: string) {
-  return src.toUpperCase() != src.toLowerCase();
+  return src.toUpperCase() != src.toLowerCase() || src == "_";
 }
 
 /**
@@ -141,10 +142,6 @@ export function tokenize(sourceCode: string): Token[] {
     } else if (src[0] == "]") {
       tokens.push(token(src.shift(), TokenType.CloseBracket, differ));
       differ = false;
-    } // HANDLE UNARY OPERATORS
-    else if (src[0] == "!") {
-      tokens.push(token(src.shift(), TokenType.Exclamation, differ));
-      differ = false;
     } // HANDLE BINARY OPERATORS
     else if (
       src[0] == "+" || src[0] == "-" || src[0] == "*" || src[0] == "/" ||
@@ -155,6 +152,16 @@ export function tokenize(sourceCode: string): Token[] {
     } // Comparison
     else if (["==", "!=", ">=", "<="].includes(src.slice(0, 2).join(""))) {
       tokens.push(token(src.slice(0, 2).join(""), TokenType.ComparisonOperator, differ));
+      differ = false;
+      src.shift();
+      src.shift();
+    } // logical
+    else if (["&", "|"].includes(src[0])) {
+      tokens.push(token(src.shift(), TokenType.LogicalOperator, differ));
+      differ = false;
+    }
+    else if (["!|"].includes(src.slice(0, 2).join(""))) {
+      tokens.push(token(src.slice(0, 2).join(""), TokenType.LogicalOperator, differ));
       differ = false;
       src.shift();
       src.shift();
@@ -177,6 +184,10 @@ export function tokenize(sourceCode: string): Token[] {
       differ = false;
     } else if (src[0] == ".") {
       tokens.push(token(src.shift(), TokenType.Dot, differ));
+      differ = false;
+    } // HANDLE UNARY OPERATORS
+    else if (src[0] == "!") {
+      tokens.push(token(src.shift(), TokenType.Exclamation, differ));
       differ = false;
     } // HANDLE MULTICHARACTER KEYWORDS, TOKENS, IDENTIFIERS ETC...
     else if (src[0] == "\"") {
@@ -234,8 +245,7 @@ export function tokenize(sourceCode: string): Token[] {
           src[0].charCodeAt(0),
           src[0],
         );
-        // @ts-ignore
-        Deno.exit(1);
+        throw "Unreconized character found in source";
       }
     }
   }

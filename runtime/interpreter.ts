@@ -19,6 +19,7 @@ import {
   IfStmt,
   VarDeclaration,
   FuncDeclaration,
+  LogicalExpr,
 // @ts-ignore
 } from "../frontend/ast";
 // @ts-ignore
@@ -37,6 +38,7 @@ import {
   eval_list_expr,
   eval_member_expr,
   eval_call_expr,
+  eval_logical_expr,
 // @ts-ignore
 } from "./eval/expressions";
 
@@ -76,6 +78,8 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeVal {
       return eval_unary_expr(astNode as UnaryExpr, env);
     case "ComparisonExpr":
       return eval_comparison_expr(astNode as ComparisonExpr, env);
+    case "LogicalExpr":
+      return eval_logical_expr(astNode as LogicalExpr, env);
     case "Program":
       return eval_program(astNode as Program, env);
     case "FuncDeclaration":
@@ -89,11 +93,7 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeVal {
       return eval_var_declaration(astNode as VarDeclaration, env);
     // Handle unimplimented ast types as error.
     default:
-      console.error(
-        "This AST Node has not yet been setup for interpretation.",
-        astNode,
-      );
-      // @ts-ignore
-      Deno.exit(0);
+      console.error("This AST Node has not yet been setup for interpretation: ", astNode);
+      throw "This AST Node has not yet been setup for interpretation";
   }
 }

@@ -10,6 +10,7 @@ import {
   Identifier,
   ObjectLiteral,
   ListLiteral,
+  LogicalExpr,
 } from "../../frontend/ast";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
@@ -127,19 +128,27 @@ export function eval_comparison_expr(
   env: Environment,
 ): BooleanVal {
   let result: boolean;
-  const lhs = evaluate(comparison.left, env);
-  const rhs = evaluate(comparison.right, env);
+  const lhsr = evaluate(comparison.left, env);
+  const rhsr = evaluate(comparison.right, env);
   if (comparison.operator == "==") {
-    result = (lhs.value === rhs.value);
+    result = (lhsr.type == rhsr.type && lhsr.value == rhsr.value);
   } else if (comparison.operator == "!=") {
-    result = (lhs.value !== rhs.value);
+    result = (lhsr.type != rhsr.type || lhsr.value != rhsr.value);
   } else if (comparison.operator == ">=") {
+    const lhs = gtype(lhsr.type).measure.value(lhsr);
+    const rhs = gtype(rhsr.type).measure.value(rhsr);
     result = (lhs.value >= rhs.value); // only nums later !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   } else if (comparison.operator == "<=") {
+    const lhs = gtype(lhsr.type).measure.value(lhsr);
+    const rhs = gtype(rhsr.type).measure.value(rhsr);
     result = (lhs.value <= rhs.value);
   }  else if (comparison.operator == ">") {
+    const lhs = gtype(lhsr.type).measure.value(lhsr);
+    const rhs = gtype(rhsr.type).measure.value(rhsr);
     result = (lhs.value > rhs.value); // only nums later !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   } else if (comparison.operator == "<") {
+    const lhs = gtype(lhsr.type).measure.value(lhsr);
+    const rhs = gtype(rhsr.type).measure.value(rhsr);
     result = (lhs.value < rhs.value);
   } else {
     throw `comparison operator ${comparison.operator} is not allowed.`;
@@ -148,6 +157,27 @@ export function eval_comparison_expr(
   return { value: result, type: "boolean" } as BooleanVal;
 }
 
+export function eval_logical_expr(
+  logic: LogicalExpr,
+  env: Environment,
+): BooleanVal {
+  let result: boolean;
+  const lhsr = evaluate(logic.left, env);
+  const rhsr = evaluate(logic.right, env);
+  const lhs = gtype(lhsr.type).asBool.value(lhsr);
+  const rhs = gtype(rhsr.type).asBool.value(rhsr);
+  if (logic.operator == "&") {
+    result = (lhs.value && rhs.value);
+  } else if (logic.operator == "|") {
+    result = (lhs.value || rhs.value);
+  } else if (logic.operator == "!|") {
+    result = (lhs.value != rhs.value);
+  } else {
+    throw `comparison operator ${logic.operator} is not allowed.`;
+  }
+
+  return { value: result, type: "boolean" } as BooleanVal;
+}
 
 export function eval_identifier(
   ident: Identifier,
@@ -211,7 +241,8 @@ export function eval_assignment(
   env: Environment,
 ): RuntimeVal {
   if (node.assigne.kind !== "Identifier") {
-    throw `Invalid LHS inaide assignment expr ${JSON.stringify(node.assigne)}`;
+    console.error(`Invalid LHS inaide assignment expr ${JSON.stringify(node.assigne)}`)
+    throw "Invalid LHS inaide assignment expr";
   }
 
   const varname = (node.assigne as Identifier).symbol;
@@ -261,6 +292,7 @@ export function eval_member_expr (
   } else if (expr.computed && org.value?.[prop]) {
     return org.value?.[prop] as RuntimeVal;
   } else {
-    throw `No such property '${prop}'`;
+    console.error(`No such property '${prop}'`)
+    throw "No such property";
   }
 }

@@ -26,6 +26,7 @@ import {
   FuncDeclarationArgument,
   UnaryExpr,
   ReturnStmt,
+  LogicalExpr,
 } from "./ast";
 import { Token, tokenize, TokenType } from "./lexer";
 
@@ -288,12 +289,46 @@ export default class Parser {
   }
 
   private parse_assignment_expr(): Expr {
-    const left = this.parse_object_expr();
+    const left = this.parse_logical_expr();
 
     if (this.at().type == TokenType.Equals) {
       this.eat(); // advance past equals
       const value = this.parse_expr();
       return { value, assigne: left, kind: "AssignmentExpr" } as AssignmentExpr;
+    }
+
+    return left;
+  }
+
+  
+  private parse_logical_expr(): Expr {
+    let left = this.parse_comparison_expr();
+    while (this.at().type == TokenType.LogicalOperator) {
+      const operator = this.eat().value;
+      let right = this.parse_comparison_expr();
+      left = {
+        kind: "LogicalExpr",
+        left,
+        right,
+        operator
+      } as LogicalExpr
+    }
+
+    return left;
+  }
+
+  private parse_comparison_expr(): Expr {
+    let left = this.parse_object_expr();
+
+    while (this.at().type == TokenType.ComparisonOperator) {
+      const operator = this.eat().value;
+      const right = this.parse_object_expr();
+      left = {
+        kind: "ComparisonExpr",
+        left,
+        right,
+        operator,
+      } as ComparisonExpr;
     }
 
     return left;
@@ -347,7 +382,7 @@ export default class Parser {
   private parse_list_expr(): Expr {
     // { Prop[] }
     if (this.at().type !== TokenType.OpenBracket) {
-      return this.parse_logical_expr();
+      return this.parse_additive_expr();
     }
 
     this.eat(); // advance past open brace.
@@ -362,27 +397,6 @@ export default class Parser {
 
     this.expect(TokenType.CloseBracket, "]", "after list literal");
     return { kind: "ListLiteral", value } as ListLiteral;
-  }
-
-  private parse_logical_expr(): Expr {
-    return this.parse_comparison_expr();
-  }
-
-  private parse_comparison_expr(): Expr {
-    let left = this.parse_additive_expr();
-
-    while (this.at().value == "==" || this.at().value == "!=" || this.at().value == ">=" || this.at().value == "<=" || this.at().value == "<" || this.at().value == ">") {
-      const operator = this.eat().value;
-      const right = this.parse_expr();
-      left = {
-        kind: "ComparisonExpr",
-        left,
-        right,
-        operator,
-      } as ComparisonExpr;
-    }
-
-    return left;
   }
 
   // Handle Addition & Subtraction Operations

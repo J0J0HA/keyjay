@@ -35,6 +35,12 @@ const basics: {[id: string]: i.NativeFunctionVal} = {
     value: function (self: i.RuntimeVal) {
       return i.MK_STRING(`<unknown type ${self.type}>`);
     }
+  },
+  "measure": {
+    type: "nativecode",
+    value: function (self: i.RuntimeVal) {
+      throw `Type ${self.type} has no function provided to handle .measure()`;
+    }
   }
 };
 
@@ -71,7 +77,7 @@ export const types: {[id: string]: {[id: string]: i.NativeFunctionVal}} = {
       "asStr": {
         type: "nativecode",
         value: function (self: i.RuntimeVal) {
-          return i.MK_STRING(self.value ? "false" : "true");
+          return i.MK_STRING(self.value ? "true" : "false");
         }
       } as i.NativeFunctionVal,
       "asNum": {
@@ -83,13 +89,13 @@ export const types: {[id: string]: {[id: string]: i.NativeFunctionVal}} = {
       "asBool": {
         type: "nativecode",
         value: function (self: i.RuntimeVal) {
-          return self;
+          return i.MK_BOOL(self.value);
         }
       } as i.NativeFunctionVal,
       "repr": {
         type: "nativecode",
         value: function (self: i.RuntimeVal) {
-          return i.MK_STRING(`${self.value ? "false" : "true"}`);
+          return i.MK_STRING(`${self.value ? "true" : "false"}`);
         }
       }
     },
@@ -110,7 +116,7 @@ export const types: {[id: string]: {[id: string]: i.NativeFunctionVal}} = {
       "asBool": {
         type: "nativecode",
         value: function (self: i.RuntimeVal) {
-          return i.MK_BOOL((self.value == 0) ? false : true);
+          return i.MK_BOOL((self.value != 0) ? true : false);
         }
       } as i.NativeFunctionVal,
       "repr": {
@@ -118,7 +124,13 @@ export const types: {[id: string]: {[id: string]: i.NativeFunctionVal}} = {
         value: function (self: i.RuntimeVal) {
           return i.MK_STRING(`${self.value}`);
         }
-      }
+      },
+      "measure": {
+        type: "nativecode",
+        value: function (self: i.RuntimeVal) {
+          return i.MK_NUMBER(self.value);
+        }
+      } as i.NativeFunctionVal,
     },
     "string": {
       ...basics,
@@ -137,7 +149,7 @@ export const types: {[id: string]: {[id: string]: i.NativeFunctionVal}} = {
       "asBool": {
         type: "nativecode",
         value: function (self: i.RuntimeVal) {
-          return i.MK_BOOL((self.value == "") ? false : true);
+          return i.MK_BOOL((self.value == "") ? true : false);
         }
       } as i.NativeFunctionVal,
       "repr": {
@@ -145,7 +157,13 @@ export const types: {[id: string]: {[id: string]: i.NativeFunctionVal}} = {
         value: function (self: i.RuntimeVal) {
           return i.MK_STRING(`"${self.value}"`);
         }
-      }
+      },
+      "measure": {
+        type: "nativecode",
+        value: function (self: i.RuntimeVal) {
+          return i.MK_NUMBER(self.value.length);
+        }
+      } as i.NativeFunctionVal,
     },
     "object": {
       ...basics,
@@ -170,7 +188,13 @@ export const types: {[id: string]: {[id: string]: i.NativeFunctionVal}} = {
           }
           return i.MK_STRING(`\{${props.join(', ')}\}`);
         }
-      }
+      },
+      "measure": {
+        type: "nativecode",
+        value: function (self: i.RuntimeVal) {
+          return i.MK_NUMBER(self.value.length);
+        }
+      } as i.NativeFunctionVal,
     },
     "list": {
       ...basics,
@@ -183,7 +207,13 @@ export const types: {[id: string]: {[id: string]: i.NativeFunctionVal}} = {
           }
           return i.MK_STRING(`[${props.join(', ')}]`);
         }
-      }
+      },
+      "measure": {
+        type: "nativecode",
+        value: function (self: i.RuntimeVal) {
+          return i.MK_NUMBER(self.value.length);
+        }
+      } as i.NativeFunctionVal,
     },
     "function": {
       ...basics,

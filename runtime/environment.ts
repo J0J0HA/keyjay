@@ -5,14 +5,16 @@ import Parser from "../frontend/parser";
 import { MK_BOOL, MK_TYPE, MK_OBJ, MK_STRING, MK_NUMBER, MK_NONE, MK_LIST, RuntimeVal, NativeFunctionVal } from "./values";
 const prompt = require("readline-sync").question;
 import * as fs from 'fs';
+import * as gpath from 'path';
 
 export function createGlobalEnv(path: string) {
   const env = new Environment();
   // Create Default Global Enviornment
+  env.declareVar("_libdir_", MK_STRING(process.env.APPDATA + "\\keyjay\\libs" || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences/keyjay/libs' : process.env.HOME + "/.keyjay/libs")), true);
   env.declareVar("system", MK_OBJ({
     impl: MK_STRING("TypeScript"),
     name: MK_STRING("KeyJay"),
-    version: MK_STRING("v0.1"),
+    version: MK_STRING("1.1.3"),
     path: MK_STRING(path)
   }), true);
   env.declareVar("print", {
@@ -22,7 +24,7 @@ export function createGlobalEnv(path: string) {
       return MK_NONE();
     }
   } as NativeFunctionVal, true);
-  env.declareVar("import", {
+  env.declareVar("importf", {
     type: "nativecode",
     env: true,
     value: function (env: Environment, arg: RuntimeVal): RuntimeVal {
@@ -42,6 +44,13 @@ export function createGlobalEnv(path: string) {
         obj[args[1]] = args[0]
       })
       return MK_OBJ(obj);
+    }
+  } as NativeFunctionVal, true);
+  env.declareVar("import", {
+    type: "nativecode",
+    env: true,
+    value: function (env: Environment, arg: RuntimeVal): RuntimeVal {
+      return env.lookupVar("importf").value(env, MK_STRING(gpath.join(env.lookupVar("_libdir_").value, arg.value + ".kj")));
     }
   } as NativeFunctionVal, true);
   env.declareVar("eval", {

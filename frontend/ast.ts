@@ -35,6 +35,7 @@ export type NodeType =
   | "Identifier"
   | "BinaryExpr"
   | "ComparisonExpr"
+  | "LogicalExpr"
   | "UnaryExpr";
 
 /**
@@ -109,6 +110,13 @@ export interface CallExpr extends Expr {
 
 export interface ComparisonExpr extends Expr {
   kind: "ComparisonExpr";
+  left: Expr;
+  right: Expr;
+  operator: string;
+}
+
+export interface LogicalExpr extends Expr {
+  kind: "LogicalExpr";
   left: Expr;
   right: Expr;
   operator: string;
