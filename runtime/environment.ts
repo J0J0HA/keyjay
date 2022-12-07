@@ -10,7 +10,7 @@ import * as gpath from 'path';
 export function createGlobalEnv(path: string) {
   const env = new Environment();
   // Create Default Global Enviornment
-  env.declareVar("_libdir_", MK_STRING(process.env.APPDATA + "\\keyjay\\libs" || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences/keyjay/libs' : process.env.HOME + "/.keyjay/libs")), true);
+  env.declareVar("_libdir_", MK_STRING(process.env.APPDATA ? proccess.env.APPDATA + "\\keyjay\\libs" : (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences/keyjay/libs' : process.env.HOME + "/.keyjay/libs")), true);
   env.declareVar("system", MK_OBJ({
     impl: MK_STRING("TypeScript"),
     name: MK_STRING("KeyJay"),
